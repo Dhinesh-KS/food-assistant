@@ -1,6 +1,6 @@
 "use client";
 
-import { ShoppingCart, ChefHat, Sparkles } from 'lucide-react';
+import { ShoppingCart, ChefHat, Sparkles, MessageSquare, Grid3x3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/cart';
 import { useState, useEffect } from 'react';
@@ -8,12 +8,15 @@ import { CartDrawer } from './CartDrawer';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SignInButton, SignUpButton, UserButton, useUser } from '@clerk/nextjs';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export function Header() {
   const itemCount = useCartStore((state) => state.getItemCount());
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const { isSignedIn, user } = useUser();
+  const pathname = usePathname();
 
   useEffect(() => {
     setMounted(true);
@@ -23,19 +26,44 @@ export function Header() {
     <>
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center shadow-lg">
-              <ChefHat className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="font-bold text-xl bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-                  Spice & Delight
-                </h1>
-                <Sparkles className="w-4 h-4 text-orange-500" />
+          <div className="flex items-center gap-6">
+            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+              <div className="w-11 h-11 rounded-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center shadow-lg">
+                <ChefHat className="w-6 h-6 text-white" />
               </div>
-              <p className="text-xs text-muted-foreground font-medium">AI-Powered Ordering Assistant</p>
-            </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h1 className="font-bold text-xl bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+                    Spice & Delight
+                  </h1>
+                  <Sparkles className="w-4 h-4 text-orange-500" />
+                </div>
+                <p className="text-xs text-muted-foreground font-medium">AI-Powered Ordering Assistant</p>
+              </div>
+            </Link>
+
+            <nav className="hidden md:flex items-center gap-1 bg-muted/50 rounded-lg p-1">
+              <Link href="/">
+                <Button
+                  variant={pathname === '/' ? 'default' : 'ghost'}
+                  size="sm"
+                  className={pathname === '/' ? 'bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 font-semibold' : 'font-semibold'}
+                >
+                  <MessageSquare className="w-4 h-4 mr-2" />
+                  Chat
+                </Button>
+              </Link>
+              <Link href="/browse">
+                <Button
+                  variant={pathname === '/browse' ? 'default' : 'ghost'}
+                  size="sm"
+                  className={pathname === '/browse' ? 'bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 font-semibold' : 'font-semibold'}
+                >
+                  <Grid3x3 className="w-4 h-4 mr-2" />
+                  Browse
+                </Button>
+              </Link>
+            </nav>
           </div>
 
           <div className="flex items-center gap-3">
@@ -108,6 +136,32 @@ export function Header() {
                 </Button>
               </SignInButton>
             )}
+          </div>
+        </div>
+
+        {/* Mobile Navigation */}
+        <div className="md:hidden border-t">
+          <div className="container mx-auto px-4 py-2 flex gap-2">
+            <Link href="/" className="flex-1">
+              <Button
+                variant={pathname === '/' ? 'default' : 'ghost'}
+                size="sm"
+                className={`w-full ${pathname === '/' ? 'bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 font-semibold' : 'font-semibold'}`}
+              >
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Chat
+              </Button>
+            </Link>
+            <Link href="/browse" className="flex-1">
+              <Button
+                variant={pathname === '/browse' ? 'default' : 'ghost'}
+                size="sm"
+                className={`w-full ${pathname === '/browse' ? 'bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 font-semibold' : 'font-semibold'}`}
+              >
+                <Grid3x3 className="w-4 h-4 mr-2" />
+                Browse
+              </Button>
+            </Link>
           </div>
         </div>
       </header>

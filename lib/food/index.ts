@@ -38,3 +38,40 @@ export function getFoodsWithEmbeddings(): FoodWithEmbedding[] {
   }
   return foodsWithEmbeddings;
 }
+
+export function getUniqueCategories(): string[] {
+  const foods = getAllFoods();
+  const categories = new Set(foods.map(food => food.category));
+  return Array.from(categories).sort();
+}
+
+export function getUniqueSpiceLevels(): string[] {
+  const foods = getAllFoods();
+  const spiceLevels = new Set(foods.map(food => food.spiceLevel).filter(Boolean));
+  return Array.from(spiceLevels).sort();
+}
+
+export type SortOption = 'name-asc' | 'price-low' | 'price-high' | 'calories-low' | 'protein-high';
+
+export function sortFoods(foods: Food[], sortBy: SortOption): Food[] {
+  const sorted = [...foods];
+  
+  switch (sortBy) {
+    case 'name-asc':
+      return sorted.sort((a, b) => a.name.localeCompare(b.name));
+    case 'price-low':
+      return sorted.sort((a, b) => a.price - b.price);
+    case 'price-high':
+      return sorted.sort((a, b) => b.price - a.price);
+    case 'calories-low':
+      return sorted.sort((a, b) => a.nutrition.calories - b.nutrition.calories);
+    case 'protein-high':
+      return sorted.sort((a, b) => {
+        const proteinA = parseInt(a.nutrition.protein) || 0;
+        const proteinB = parseInt(b.nutrition.protein) || 0;
+        return proteinB - proteinA;
+      });
+    default:
+      return sorted;
+  }
+}

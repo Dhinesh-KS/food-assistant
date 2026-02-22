@@ -215,7 +215,7 @@ export function ChatInterface() {
 
   return (
     <div className="flex flex-col h-full bg-background">
-      <div className="flex-1 overflow-y-auto px-4 py-6">
+      <div className={`flex-1 px-4 py-6 ${messages.length > 0 ? 'overflow-y-auto' : 'overflow-hidden flex items-center justify-center'}`}>
         <div className="max-w-4xl mx-auto space-y-1">
           <AnimatePresence>
             {messages.length === 0 && (
