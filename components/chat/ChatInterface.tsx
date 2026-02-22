@@ -328,19 +328,11 @@ export function ChatInterface() {
                 exit={{ opacity: 0 }}
                 className="text-center py-12 px-4"
               >
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-                  className="w-24 h-24 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center mx-auto mb-6 shadow-lg"
-                >
-                  <span className="text-6xl">🍽️</span>
-                </motion.div>
                 <motion.h2
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent"
+                  className="text-4xl md:text-5xl font-extrabold mb-4 bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent"
                 >
                   {isSignedIn 
                     ? `Welcome back, ${user?.firstName || 'there'}!` 
@@ -350,7 +342,7 @@ export function ChatInterface() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
-                  className="text-muted-foreground text-lg md:text-xl mb-4 max-w-2xl mx-auto"
+                  className="text-muted-foreground text-lg md:text-xl mb-4 max-w-2xl mx-auto font-medium"
                 >
                   {isSignedIn 
                     ? 'Ready to order your favorite dishes?' 
@@ -360,7 +352,7 @@ export function ChatInterface() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 }}
-                  className="text-muted-foreground text-base mb-10 max-w-xl mx-auto"
+                  className="text-muted-foreground text-base mb-10 max-w-xl mx-auto font-normal"
                 >
                   Ask me anything about our menu, dietary preferences, or tell me what you're craving. 
                   I'll help you discover the perfect meal! 🌟
@@ -394,7 +386,12 @@ export function ChatInterface() {
         </div>
       </div>
 
-      <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6, duration: 0.5 }}
+        className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+      >
         <div className="max-w-4xl mx-auto px-4 py-4 border-t">
           <MessageInput
             input={input}
@@ -403,7 +400,7 @@ export function ChatInterface() {
             isLoading={isLoading}
           />
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
