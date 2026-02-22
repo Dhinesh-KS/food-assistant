@@ -133,14 +133,7 @@ export function ChatMessage({
             >
               <p className="text-sm whitespace-pre-wrap leading-relaxed">{content}</p>
             </div>
-            <div className="flex items-center justify-between gap-2">
-              <span className={cn(
-                "text-xs text-muted-foreground/70 px-1 font-medium",
-                isUser ? "text-right" : "text-left"
-              )}>
-                {formattedTime}
-              </span>
-              
+            <div className={cn("flex flex-col gap-1", isUser ? "items-end" : "items-start")}>
               {!isUser && (
                 <div className="flex items-center gap-1">
                   <Button
@@ -197,6 +190,10 @@ export function ChatMessage({
                   </Button>
                 </div>
               )}
+              
+              <span className="text-xs text-muted-foreground/70 px-1 font-medium">
+                {formattedTime}
+              </span>
             </div>
           </motion.div>
         )}

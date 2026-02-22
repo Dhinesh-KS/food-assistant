@@ -17,6 +17,7 @@ export function BrowseView() {
   const [categories, setCategories] = useState<string[]>([]);
   const [spiceLevels, setSpiceLevels] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('name-asc');
   const [filters, setFilters] = useState<SearchFilters>({});
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
@@ -30,12 +31,21 @@ export function BrowseView() {
     setIsLoading(false);
   }, []);
 
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
   const filteredAndSortedFoods = useMemo(() => {
     let results = allFoods;
 
-    // Apply search query
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
+    // Apply debounced search query
+    if (debouncedSearchQuery) {
+      const query = debouncedSearchQuery.toLowerCase();
       results = results.filter(
         (food) =>
           food.name.toLowerCase().includes(query) ||
@@ -82,7 +92,7 @@ export function BrowseView() {
 
     // Apply sorting
     return sortFoods(results, sortBy);
-  }, [allFoods, searchQuery, filters, sortBy]);
+  }, [allFoods, debouncedSearchQuery, filters, sortBy]);
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
