@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ConversationHistory } from './ConversationHistory';
-import { OrderHistory } from './OrderHistory';
+import { ConversationHistory } from './components/ConversationHistory';
+import { OrderHistory } from './components/OrderHistory';
 import { MessageSquare, ShoppingBag } from 'lucide-react';
 
-export function HistoryView() {
+function HistoryContent() {
   const searchParams = useSearchParams();
   const tabParam = searchParams.get('tab');
   const [activeTab, setActiveTab] = useState(tabParam === 'orders' ? 'orders' : 'conversations');
@@ -52,5 +52,13 @@ export function HistoryView() {
         </Tabs>
       </div>
     </div>
+  );
+}
+
+export function HistoryView() {
+  return (
+    <Suspense fallback={<div className="h-full flex items-center justify-center">Loading...</div>}>
+      <HistoryContent />
+    </Suspense>
   );
 }

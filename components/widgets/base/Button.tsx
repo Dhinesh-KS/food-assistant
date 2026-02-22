@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from '@/lib/utils';
-import { ButtonProps, ActionSchema } from '../schema';
+import { ButtonProps, ActionSchema } from '@/types/component';
 
 interface ButtonComponentProps extends ButtonProps {
   onAction?: (action: ActionSchema) => void;

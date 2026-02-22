@@ -3,7 +3,7 @@
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
-import { SortOption } from '@/lib/food/index';
+import { SortOption } from '@/types/food';
 
 interface SearchBarProps {
   searchQuery: string;

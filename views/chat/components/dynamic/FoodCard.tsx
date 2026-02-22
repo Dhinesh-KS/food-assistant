@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Minus, Leaf, Flame, ShoppingCart, Info, X } from 'lucide-react';
-import { Food } from '@/lib/food/types';
+import { Food } from '@/types/food';
 import { useCartStore } from '@/store/cart';
 import { formatPrice } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';

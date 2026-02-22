@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils';
 import { Leaf, Flame, Star, Check, Clock } from 'lucide-react';
-import { BadgeProps } from '../schema';
+import { BadgeProps } from '@/types/component';
 
 export function Badge({ 
   text,

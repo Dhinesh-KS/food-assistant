@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
-import { Food, SearchFilters } from '@/lib/food/types';
-import { getAllFoods, getUniqueCategories, getUniqueSpiceLevels, sortFoods, SortOption } from '@/lib/food/index';
-import { FilterSidebar } from './FilterSidebar';
-import { SearchBar } from './SearchBar';
-import { FoodGrid } from './FoodGrid';
+import { Food, SearchFilters, SortOption } from '@/types/food';
+import { getAllFoods, getUniqueCategories, getUniqueSpiceLevels, sortFoods } from '@/lib/food-client';
+import { FilterSidebar } from './components/FilterSidebar';
+import { SearchBar } from './components/SearchBar';
+import { FoodGrid } from './components/FoodGrid';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { X, MessageSquare } from 'lucide-react';

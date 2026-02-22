@@ -1,10 +1,17 @@
-import { Food, SearchFilters, SearchResult } from './types';
-import { getFoodsWithEmbeddings } from './index';
+import { SearchFilters, SearchResult } from '@/types/food';
+import { getFoodsWithEmbeddings } from './food-client';
 import OpenAI from 'openai';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || '',
 });
+
+// Re-export client-safe functions
+export * from './food-client';
+
+// ============================================================================
+// Server-Only Search Functions
+// ============================================================================
 
 // Semantic query expansion using LLM
 export async function expandQuery(query: string): Promise<string> {
@@ -166,44 +173,4 @@ export async function searchFoods(
   results.sort((a, b) => b.score - a.score);
   
   return results.slice(0, limit);
-}
-
-export function getFoodsByCategory(category: string, limit: number = 20): Food[] {
-  const foods = getFoodsWithEmbeddings();
-  return foods
-    .filter(food => food.category.toLowerCase().includes(category.toLowerCase()))
-    .slice(0, limit)
-    .map(f => ({
-      id: f.id,
-      name: f.name,
-      image: f.image,
-      description: f.description,
-      category: f.category,
-      type: f.type,
-      spiceLevel: f.spiceLevel,
-      ingredients: f.ingredients,
-      nutrition: f.nutrition,
-      price: f.price,
-      serves: f.serves,
-    }));
-}
-
-export function getFoodsByType(type: string, limit: number = 20): Food[] {
-  const foods = getFoodsWithEmbeddings();
-  return foods
-    .filter(food => food.type.toLowerCase() === type.toLowerCase())
-    .slice(0, limit)
-    .map(f => ({
-      id: f.id,
-      name: f.name,
-      image: f.image,
-      description: f.description,
-      category: f.category,
-      type: f.type,
-      spiceLevel: f.spiceLevel,
-      ingredients: f.ingredients,
-      nutrition: f.nutrition,
-      price: f.price,
-      serves: f.serves,
-    }));
 }

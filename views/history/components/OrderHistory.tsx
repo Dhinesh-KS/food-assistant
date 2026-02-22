@@ -67,22 +67,7 @@ export function OrderHistory() {
     if (!order) return;
 
     order.items.forEach((item) => {
-      addItem(
-        {
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          image: item.image,
-          serves: item.serves,
-          description: item.description || '',
-          category: item.category || '',
-          type: item.type || '',
-          spiceLevel: item.spiceLevel || '',
-          ingredients: item.ingredients || [],
-          nutrition: item.nutrition || { calories: 0, protein: '0g', carbs: '0g', fat: '0g' },
-        },
-        item.quantity
-      );
+      addItem(item.food, item.quantity);
     });
 
     toast({
@@ -140,19 +125,19 @@ export function OrderHistory() {
                       className="flex items-center justify-between text-sm py-2 border-b last:border-0"
                     >
                       <div className="flex items-center gap-3">
-                        {item.image && (
+                        {item.food.image && (
                           <img
-                            src={item.image}
-                            alt={item.name}
+                            src={item.food.image}
+                            alt={item.food.name}
                             className="w-12 h-12 rounded object-cover"
                           />
                         )}
                         <div>
-                          <p className="font-medium">{item.name}</p>
+                          <p className="font-medium">{item.food.name}</p>
                           <p className="text-muted-foreground">Qty: {item.quantity}</p>
                         </div>
                       </div>
-                      <p className="font-semibold">{formatPrice(item.price * item.quantity)}</p>
+                      <p className="font-semibold">{formatPrice(item.food.price * item.quantity)}</p>
                     </div>
                   ))}
                 </div>

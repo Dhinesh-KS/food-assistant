@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { Order } from '@/lib/history/types';
+import { Order } from '@/types/history';
 
 const orders: any[] = [];
 

@@ -2,7 +2,7 @@
 
 import { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
-import { ColumnProps } from '../schema';
+import { ColumnProps } from '@/types/component';
 
 interface ColumnComponentProps extends ColumnProps {
   children?: ReactNode;

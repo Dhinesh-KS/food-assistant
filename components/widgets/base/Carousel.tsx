@@ -2,7 +2,7 @@
 
 import { ReactNode, useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { CarouselProps } from '../schema';
+import { CarouselProps } from '@/types/component';
 import {
   Carousel as ShadcnCarousel,
   CarouselContent,

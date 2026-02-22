@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from '@/lib/utils';
-import { DividerProps } from '../schema';
+import { DividerProps } from '@/types/component';
 
 export function Divider({ className }: DividerProps) {
   return (

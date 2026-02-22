@@ -1,5 +1,5 @@
 import { Header } from '@/components/layout/Header';
-import { HistoryView } from '@/components/history/HistoryView';
+import { HistoryView } from '@/views/history/HistoryView';
 
 export default function HistoryPage() {
   return (

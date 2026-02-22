@@ -1,7 +1,7 @@
 "use client";
 
-import { Food } from '@/lib/food/types';
-import { FoodCard } from '@/components/chat/dynamic/FoodCard';
+import { Food } from '@/types/food';
+import { FoodCard } from '@/views/chat/components/dynamic/FoodCard';
 import { motion } from 'framer-motion';
 import { UtensilsCrossed } from 'lucide-react';
 

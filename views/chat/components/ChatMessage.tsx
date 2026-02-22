@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { ComponentSchema, ActionSchema } from '@/components/widgets/schema';
+import { ComponentSchema, ActionSchema } from '@/types/component';
 import { ComponentRenderer } from '@/components/widgets/renderer';
 import { ChefHat, User, Copy, Volume2, ThumbsUp, ThumbsDown, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';

@@ -42,3 +42,5 @@ export interface CartItem {
   food: Food;
   quantity: number;
 }
+
+export type SortOption = 'name-asc' | 'price-low' | 'price-high' | 'calories-low' | 'protein-high';

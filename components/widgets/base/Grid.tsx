@@ -2,7 +2,7 @@
 
 import { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
-import { GridProps } from '../schema';
+import { GridProps } from '@/types/component';
 
 interface GridComponentProps extends GridProps {
   children?: ReactNode;

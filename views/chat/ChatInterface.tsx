@@ -1,18 +1,19 @@
 "use client";
 
 import { useRef, useEffect, useState, FormEvent } from 'react';
-import { ChatMessage } from './ChatMessage';
-import { MessageInput } from './MessageInput';
-import { TypingIndicator } from './TypingIndicator';
-import { SuggestedQueries } from './SuggestedQueries';
+import { ChatMessage } from './components/ChatMessage';
+import { MessageInput } from './components/MessageInput';
+import { TypingIndicator } from './components/TypingIndicator';
+import { SuggestedQueries } from './components/SuggestedQueries';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ComponentSchema, ActionSchema } from '@/components/widgets/schema';
+import { ComponentSchema, ActionSchema } from '@/types/component';
 import { useCartStore } from '@/store/cart';
 import { toast } from '@/hooks/use-toast';
 import { useUser } from '@clerk/nextjs';
 import { useConversationStore } from '@/store/conversation';
-import { Plus } from 'lucide-react';
+import { Plus, History as HistoryIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export interface Message {
   id: string;
@@ -43,16 +44,19 @@ export function ChatInterface() {
     getMostRecentConversation,
   } = useConversationStore();
   
-  // Initialize or load conversation
+  // Initialize - check if resuming a conversation or start fresh
   useEffect(() => {
     if (!user || hasInitialized.current) return;
     
-    // Only load existing conversation if one is set
+    // If there's a current conversation ID, load it (user clicked "Resume")
     if (currentConversationId) {
       const existingConv = getCurrentConversation();
       if (existingConv && existingConv.messages.length > 0) {
         setMessages(existingConv.messages);
       }
+    } else {
+      // Otherwise, show fresh landing page
+      setMessages([]);
     }
     
     hasInitialized.current = true;
@@ -280,12 +284,9 @@ export function ChatInterface() {
   const handleNewChat = () => {
     if (!user) return;
     
-    // Clear current messages
+    // Clear current messages and conversation
     setMessages([]);
-    
-    // Create new conversation
-    const newConvId = createConversation(user.id);
-    setCurrentConversation(newConvId);
+    setCurrentConversation(null);
     
     // Show toast notification
     toast({
@@ -364,6 +365,27 @@ export function ChatInterface() {
                 >
                   <SuggestedQueries onSelect={handleQuickAction} />
                 </motion.div>
+                
+                {/* Resume Conversation Link */}
+                {isSignedIn && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7 }}
+                    className="mt-8"
+                  >
+                    <Link href="/history">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800 hover:bg-orange-50 dark:hover:bg-orange-950"
+                      >
+                        <HistoryIcon className="w-4 h-4 mr-2" />
+                        Resume Previous Conversation
+                      </Button>
+                    </Link>
+                  </motion.div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>

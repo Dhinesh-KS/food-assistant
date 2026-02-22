@@ -1,5 +1,5 @@
 import { Header } from '@/components/layout/Header';
-import { CartPage } from '@/components/cart/CartPage';
+import { CartPage } from '@/views/cart/CartPage';
 
 export default function Cart() {
   return (

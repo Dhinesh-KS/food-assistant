@@ -2,7 +2,7 @@
 
 import { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
-import { RowProps } from '../schema';
+import { RowProps } from '@/types/component';
 
 interface RowComponentProps extends RowProps {
   children?: ReactNode;

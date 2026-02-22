@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Conversation, ConversationSummary } from '@/lib/history/types';
-import { Message } from '@/components/chat/ChatInterface';
+import { Conversation, ConversationSummary } from '@/types/history';
+import { Message } from '@/types/chat';
 
 interface ConversationStore {
   currentConversationId: string | null;

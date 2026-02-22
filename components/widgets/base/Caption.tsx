@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from '@/lib/utils';
-import { CaptionProps } from '../schema';
+import { CaptionProps } from '@/types/component';
 
 export function Caption({ 
   text,

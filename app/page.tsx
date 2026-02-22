@@ -1,5 +1,5 @@
 import { Header } from '@/components/layout/Header';
-import { ChatInterface } from '@/components/chat/ChatInterface';
+import { ChatInterface } from '@/views/chat/ChatInterface';
 
 export default function Home() {
   return (

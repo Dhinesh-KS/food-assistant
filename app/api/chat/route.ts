@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import { NextResponse } from 'next/server';
 import { SYSTEM_PROMPT } from '@/lib/prompts';
-import { searchFoods } from '@/lib/food/search';
+import { searchFoods } from '@/lib/food';
 import { buildFoodCarousel, buildNoResultsMessage } from '@/components/widgets/builders';
 
 const openai = new OpenAI({

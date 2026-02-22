@@ -1,5 +1,5 @@
-import { ComponentSchema } from './schema';
-import { Food } from '@/lib/food/types';
+import { ComponentSchema } from '@/types/component';
+import { Food } from '@/types/food';
 import { formatPrice } from '@/lib/utils';
 
 /**

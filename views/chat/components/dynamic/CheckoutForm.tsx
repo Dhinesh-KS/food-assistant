@@ -9,7 +9,7 @@ import { formatPrice } from '@/lib/utils';
 import { useUser } from '@clerk/nextjs';
 import { useConversationStore } from '@/store/conversation';
 import { useOrderHistoryStore } from '@/store/orderHistory';
-import { Order } from '@/lib/history/types';
+import { Order } from '@/types/history';
 
 interface CheckoutFormProps {
   onSubmit?: (orderData: any) => void;

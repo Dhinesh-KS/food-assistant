@@ -16,7 +16,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from '@/hooks/use-toast';
 import { useConversationStore } from '@/store/conversation';
 import { useOrderHistoryStore } from '@/store/orderHistory';
-import { Order } from '@/lib/history/types';
+import { Order } from '@/types/history';
 
 export function CartPage() {
   const { items, updateQuantity, removeItem, getTotal, clearCart } = useCartStore();

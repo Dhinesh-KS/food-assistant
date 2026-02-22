@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import NextImage from 'next/image';
 import { cn } from '@/lib/utils';
-import { ImageProps } from '../schema';
+import { ImageProps } from '@/types/component';
 
 export function Image({ 
   src,

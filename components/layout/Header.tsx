@@ -3,6 +3,7 @@
 import { ShoppingCart, ChefHat, MessageSquare, Grid3x3, History, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/cart';
+import { useConversationStore } from '@/store/conversation';
 import { useState, useEffect } from 'react';
 import { CartDrawer } from './CartDrawer';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -13,11 +14,17 @@ import { usePathname } from 'next/navigation';
 
 export function Header() {
   const itemCount = useCartStore((state) => state.getItemCount());
+  const setCurrentConversation = useConversationStore((state) => state.setCurrentConversation);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const { isSignedIn, user } = useUser();
   const pathname = usePathname();
+  
+  const handleNewChat = () => {
+    setCurrentConversation(null);
+    setIsMenuOpen(false);
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -42,7 +49,7 @@ export function Header() {
               )}
             </Button>
 
-            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <Link href="/" onClick={handleNewChat} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
               <div className="w-11 h-11 rounded-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center shadow-lg">
                 <ChefHat className="w-6 h-6 text-white" />
               </div>
@@ -182,7 +189,7 @@ export function Header() {
 
                 {/* Navigation Links */}
                 <nav className="space-y-2">
-                  <Link href="/" onClick={() => setIsMenuOpen(false)}>
+                  <Link href="/" onClick={handleNewChat}>
                     <Button
                       variant={pathname === '/' ? 'default' : 'ghost'}
                       className={`w-full justify-start text-base ${

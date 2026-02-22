@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Plus, Minus } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { QuantitySelectorProps } from '../schema';
+import { QuantitySelectorProps } from '@/types/component';
 
 interface QuantitySelectorComponentProps extends QuantitySelectorProps {
   onChange?: (id: string, quantity: number) => void;

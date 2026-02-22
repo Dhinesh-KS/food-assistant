@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from '@/lib/utils';
-import { TitleProps } from '../schema';
+import { TitleProps } from '@/types/component';
 
 export function Title({ 
   text,

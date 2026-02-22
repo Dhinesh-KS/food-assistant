@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from '@/lib/utils';
-import { TextProps } from '../schema';
+import { TextProps } from '@/types/component';
 
 export function Text({ 
   text,

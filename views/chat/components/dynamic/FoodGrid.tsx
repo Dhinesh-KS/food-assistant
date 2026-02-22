@@ -1,6 +1,6 @@
 "use client";
 
-import { Food } from '@/lib/food/types';
+import { Food } from '@/types/food';
 import { FoodCard } from './FoodCard';
 
 interface FoodGridProps {

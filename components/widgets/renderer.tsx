@@ -1,6 +1,6 @@
 "use client";
 
-import { ComponentSchema, ActionSchema } from './schema';
+import { ComponentSchema, ActionSchema } from '@/types/component';
 import { Card } from './base/Card';
 import { Row } from './base/Row';
 import { Column } from './base/Column';

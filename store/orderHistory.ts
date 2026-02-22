@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Order, OrderSummary } from '@/lib/history/types';
+import { Order, OrderSummary } from '@/types/history';
 
 interface OrderHistoryStore {
   orders: Record<string, Order>;
@@ -44,7 +44,7 @@ export const useOrderHistoryStore = create<OrderHistoryStore>()(
           status: order.status,
           createdAt: order.createdAt,
           conversationId: order.conversationId,
-          firstItemName: order.items[0]?.name,
+          firstItemName: order.items[0]?.food.name,
         }));
       },
 

@@ -1,22 +1,22 @@
-import { Message } from '@/components/chat/ChatInterface';
-import { CartItem } from '@/store/cart';
+import { Message } from '@/types/chat';
+import { CartItem } from '@/types/food';
 
 export interface Conversation {
   id: string;
   userId: string;
-  title: string; // Auto-generated from first message or user-set
+  title: string;
   messages: Message[];
   createdAt: string;
   updatedAt: string;
-  orderId?: string; // Links to order if placed
-  itemsDiscussed: number[]; // Food IDs mentioned in chat
+  orderId?: string;
+  itemsDiscussed: number[];
   totalMessages: number;
 }
 
 export interface Order {
   id: string;
   userId: string;
-  conversationId?: string; // Links back to conversation
+  conversationId?: string;
   items: CartItem[];
   total: number;
   status: 'pending' | 'confirmed' | 'preparing' | 'delivered' | 'cancelled';

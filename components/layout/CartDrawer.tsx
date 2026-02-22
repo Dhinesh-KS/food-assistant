@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { X, ShoppingBag, CheckCircle2, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { CartSummary } from '@/components/chat/dynamic/CartSummary';
-import { CheckoutForm } from '@/components/chat/dynamic/CheckoutForm';
+import { CartSummary } from '@/views/chat/components/dynamic/CartSummary';
+import { CheckoutForm } from '@/views/chat/components/dynamic/CheckoutForm';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface CartDrawerProps {

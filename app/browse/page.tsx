@@ -1,5 +1,5 @@
 import { Header } from '@/components/layout/Header';
-import { BrowseView } from '@/components/browse/BrowseView';
+import { BrowseView } from '@/views/browse/BrowseView';
 
 export default function BrowsePage() {
   return (

@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { X, Leaf, Drumstick } from 'lucide-react';
-import { SearchFilters } from '@/lib/food/types';
+import { SearchFilters } from '@/types/food';
 
 interface FilterSidebarProps {
   categories: string[];
