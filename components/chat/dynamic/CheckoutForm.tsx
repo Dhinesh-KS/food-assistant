@@ -7,6 +7,9 @@ import { Input } from '@/components/ui/input';
 import { useCartStore } from '@/store/cart';
 import { formatPrice } from '@/lib/utils';
 import { useUser } from '@clerk/nextjs';
+import { useConversationStore } from '@/store/conversation';
+import { useOrderHistoryStore } from '@/store/orderHistory';
+import { Order } from '@/lib/history/types';
 
 interface CheckoutFormProps {
   onSubmit?: (orderData: any) => void;
@@ -15,6 +18,8 @@ interface CheckoutFormProps {
 export function CheckoutForm({ onSubmit }: CheckoutFormProps) {
   const { items, getTotal, clearCart } = useCartStore();
   const { user } = useUser();
+  const { currentConversationId, linkOrderToConversation } = useConversationStore();
+  const { addOrder } = useOrderHistoryStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -43,19 +48,32 @@ export function CheckoutForm({ onSubmit }: CheckoutFormProps) {
     e.preventDefault();
     setIsSubmitting(true);
 
+    if (!user) {
+      console.error('User not authenticated');
+      setIsSubmitting(false);
+      return;
+    }
+
     const orderData = {
-      ...formData,
+      userId: user.id,
+      conversationId: currentConversationId || undefined,
       items: items.map(item => ({
         id: item.food.id,
         name: item.food.name,
         price: item.food.price,
         quantity: item.quantity,
+        image: item.food.image,
+        serves: item.food.serves,
+        description: item.food.description,
+        category: item.food.category,
+        type: item.food.type,
+        spiceLevel: item.food.spiceLevel,
+        ingredients: item.food.ingredients,
+        nutrition: item.food.nutrition,
       })),
-      subtotal,
-      tax,
-      deliveryFee,
       total,
-      timestamp: new Date().toISOString(),
+      deliveryAddress: formData.address,
+      deliveryInstructions: formData.notes,
     };
 
     try {
@@ -67,7 +85,18 @@ export function CheckoutForm({ onSubmit }: CheckoutFormProps) {
 
       if (response.ok) {
         const result = await response.json();
+        const order: Order = result.order;
+        
+        // Save order to history store
+        addOrder(order);
+        
+        // Link order to conversation
+        if (currentConversationId && order.id) {
+          linkOrderToConversation(currentConversationId, order.id);
+        }
+        
         clearCart();
+        
         if (onSubmit) {
           onSubmit(result);
         }

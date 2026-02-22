@@ -9,34 +9,46 @@ interface SuggestedQueriesProps {
 
 export function SuggestedQueries({ onSelect }: SuggestedQueriesProps) {
   const suggestions = [
-    { icon: "🥗", text: "Vegetarian options", query: "Show me vegetarian options", color: "from-green-500 to-emerald-500" },
-    { icon: "💪", text: "High protein meals", query: "I need high protein meals", color: "from-blue-500 to-cyan-500" },
-    { icon: "🌶️", text: "Spicy food", query: "I want something spicy", color: "from-red-500 to-orange-500" },
-    { icon: "🍚", text: "North Indian", query: "What North Indian dishes do you have?", color: "from-amber-500 to-yellow-500" },
-    { icon: "🥤", text: "Beverages", query: "Show me drinks and beverages", color: "from-purple-500 to-pink-500" },
-    { icon: "🍰", text: "Desserts", query: "What desserts do you have?", color: "from-pink-500 to-rose-500" },
+    { icon: "🥗", text: "Vegetarian options", query: "Show me vegetarian options" },
+    { icon: "💪", text: "High protein meals", query: "I need high protein meals" },
+    { icon: "🌶️", text: "Spicy food", query: "I want something spicy" },
+    { icon: "🍚", text: "North Indian", query: "What North Indian dishes do you have?" },
+    { icon: "🥤", text: "Beverages", query: "Show me drinks and beverages" },
+    { icon: "🍰", text: "Desserts", query: "What desserts do you have?" },
   ];
 
   return (
-    <div className="space-y-4 max-w-3xl mx-auto">
-      <div className="flex items-center justify-center gap-2 text-sm font-medium text-muted-foreground">
-        <Sparkles className="w-5 h-5 text-orange-500" />
+    <div className="space-y-6 max-w-4xl mx-auto">
+      <div className="flex items-center justify-center gap-2 text-sm font-semibold text-muted-foreground">
+        <Sparkles className="w-5 h-5 text-orange-500 animate-pulse" />
         <span>Popular searches to get you started</span>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {suggestions.map((suggestion, index) => (
           <motion.button
             key={index}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 + index * 0.1 }}
+            transition={{ 
+              delay: 0.7 + index * 0.08,
+              duration: 0.4
+            }}
             onClick={() => onSelect(suggestion.query)}
-            className="relative p-4 border-2 rounded-xl hover:shadow-lg transition-all text-left group overflow-hidden bg-card hover:border-orange-300 dark:hover:border-orange-600"
+            className="
+              relative p-5 rounded-2xl transition-all duration-200 text-left group overflow-hidden
+              bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-950/40 dark:to-red-950/40
+              border-2 border-orange-200 dark:border-orange-800
+              hover:border-orange-500 dark:hover:border-orange-500
+              shadow-sm hover:shadow-lg hover:shadow-orange-300/50 dark:hover:shadow-orange-900/50
+              cursor-pointer
+            "
+            aria-label={`Search for ${suggestion.text}`}
           >
-            <div className={`absolute inset-0 bg-gradient-to-br ${suggestion.color} opacity-0 group-hover:opacity-10 dark:group-hover:opacity-20 transition-opacity`} />
-            <div className="relative flex flex-col gap-2">
-              <span className="text-3xl">{suggestion.icon}</span>
-              <span className="text-sm font-semibold group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
+            <div className="relative flex flex-col gap-3 items-start">
+              <div className="text-4xl">
+                {suggestion.icon}
+              </div>
+              <span className="text-sm font-bold text-foreground transition-colors">
                 {suggestion.text}
               </span>
             </div>
@@ -46,10 +58,10 @@ export function SuggestedQueries({ onSelect }: SuggestedQueriesProps) {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.3 }}
-        className="text-center text-xs text-muted-foreground mt-6"
+        transition={{ delay: 1.4 }}
+        className="text-center text-sm text-muted-foreground mt-8"
       >
-        <p>Or simply type what you're craving below ⬇️</p>
+        <p className="font-medium">Or simply type what you're craving below ⬇️</p>
       </motion.div>
     </div>
   );

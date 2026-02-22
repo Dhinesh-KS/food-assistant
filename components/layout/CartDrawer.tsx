@@ -38,7 +38,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60]"
             onClick={onClose}
           />
           
@@ -47,7 +47,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="fixed right-0 top-0 h-full w-full max-w-md bg-background z-50 shadow-2xl overflow-y-auto"
+            className="fixed right-0 top-0 h-full w-full max-w-md bg-background z-[60] shadow-2xl overflow-y-auto"
           >
             <div className="sticky top-0 bg-gradient-to-r from-orange-500 to-red-600 text-white p-4 flex items-center justify-between shadow-md z-10">
               <div className="flex items-center gap-2">

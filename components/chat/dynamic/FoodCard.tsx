@@ -23,8 +23,6 @@ export function FoodCard({ food }: FoodCardProps) {
   const addItem = useCartStore((state) => state.addItem);
   const { isSignedIn } = useUser();
 
-  console.log(`FoodCard ${food.name} - Modal state:`, isModalOpen);
-
   const handleCardClick = (e: React.MouseEvent) => {
     console.log('Card clicked, opening modal', e.target);
     console.log('Current modal state:', isModalOpen);

@@ -10,13 +10,17 @@ import { ComponentSchema, ActionSchema } from '@/components/widgets/schema';
 import { useCartStore } from '@/store/cart';
 import { toast } from '@/hooks/use-toast';
 import { useUser } from '@clerk/nextjs';
+import { useConversationStore } from '@/store/conversation';
+import { Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
-interface Message {
+export interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   timestamp: string;
   component?: ComponentSchema;
+  uiComponents?: ComponentSchema[];
 }
 
 export function ChatInterface() {
@@ -25,8 +29,60 @@ export function ChatInterface() {
   const [isLoading, setIsLoading] = useState(false);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const hasInitialized = useRef(false);
   const addItem = useCartStore((state) => state.addItem);
   const { user, isSignedIn } = useUser();
+  
+  // Conversation management
+  const {
+    currentConversationId,
+    createConversation,
+    updateConversation,
+    setCurrentConversation,
+    getCurrentConversation,
+    getMostRecentConversation,
+  } = useConversationStore();
+  
+  // Initialize or load conversation
+  useEffect(() => {
+    if (!user || hasInitialized.current) return;
+    
+    // Only load existing conversation if one is set
+    if (currentConversationId) {
+      const existingConv = getCurrentConversation();
+      if (existingConv && existingConv.messages.length > 0) {
+        setMessages(existingConv.messages);
+      }
+    }
+    
+    hasInitialized.current = true;
+  }, [user, currentConversationId, getCurrentConversation]);
+  
+  // Save conversation whenever messages change
+  useEffect(() => {
+    if (currentConversationId && messages.length > 0 && user) {
+      const itemsDiscussed: number[] = [];
+      messages.forEach(msg => {
+        if (msg.component && 'data' in msg.component) {
+          const data = msg.component.data as any;
+          if (data && typeof data === 'object' && 'id' in data) {
+            itemsDiscussed.push(data.id as number);
+          }
+        }
+        if (msg.uiComponents) {
+          msg.uiComponents.forEach(comp => {
+            if ('data' in comp) {
+              const data = comp.data as any;
+              if (data && typeof data === 'object' && 'id' in data) {
+                itemsDiscussed.push(data.id as number);
+              }
+            }
+          });
+        }
+      });
+      updateConversation(currentConversationId, messages, itemsDiscussed);
+    }
+  }, [messages, currentConversationId, user]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -93,6 +149,12 @@ export function ChatInterface() {
 
     const messageText = options?.data?.message || input.trim();
     if (!messageText) return;
+
+    // Create conversation on first message if none exists
+    if (!currentConversationId && user) {
+      const newConvId = createConversation(user.id);
+      setCurrentConversation(newConvId);
+    }
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -166,6 +228,7 @@ export function ChatInterface() {
                 );
               } else if (data.type === 'done') {
                 // Set final message and component
+                const uiComponents = data.component ? [data.component] : [];
                 setMessages((prev) =>
                   prev.map((m) =>
                     m.id === assistantMessage.id
@@ -173,6 +236,7 @@ export function ChatInterface() {
                           ...m,
                           content: data.message,
                           component: data.component,
+                          uiComponents,
                         }
                       : m
                   )
@@ -213,8 +277,47 @@ export function ChatInterface() {
     handleSubmit(fakeEvent, { data: { message } });
   };
 
+  const handleNewChat = () => {
+    if (!user) return;
+    
+    // Clear current messages
+    setMessages([]);
+    
+    // Create new conversation
+    const newConvId = createConversation(user.id);
+    setCurrentConversation(newConvId);
+    
+    // Show toast notification
+    toast({
+      title: 'New conversation started',
+      description: 'Your previous conversation has been saved',
+    });
+  };
+
   return (
     <div className="flex flex-col h-full bg-background">
+      {/* Chat Header - Only show when messages exist */}
+      {messages.length > 0 && (
+        <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-20 px-4">
+          <div className="max-w-4xl mx-auto py-3 flex items-center justify-between border-b">
+            <div className="flex-1 min-w-0">
+              <h2 className="font-semibold text-lg truncate">
+                {currentConversationId ? getCurrentConversation()?.title || 'Current Conversation' : 'Current Conversation'}
+              </h2>
+              <p className="text-xs text-muted-foreground">{messages.length} messages</p>
+            </div>
+            <Button
+              onClick={handleNewChat}
+              size="sm"
+              className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 font-semibold ml-4 flex-shrink-0"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              New Chat
+            </Button>
+          </div>
+        </div>
+      )}
+
       <div className={`flex-1 px-4 py-6 ${messages.length > 0 ? 'overflow-y-auto' : 'overflow-hidden flex items-center justify-center'}`}>
         <div className="max-w-4xl mx-auto space-y-1">
           <AnimatePresence>

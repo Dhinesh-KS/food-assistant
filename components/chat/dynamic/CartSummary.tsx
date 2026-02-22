@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Minus, Trash2, ShoppingBag } from 'lucide-react';
 import { useCartStore } from '@/store/cart';
 import { formatPrice } from '@/lib/utils';
+import Link from 'next/link';
 
 interface CartSummaryProps {
   message?: string;
@@ -129,13 +130,24 @@ export function CartSummary({ message, showCheckoutButton = true, onCheckout }: 
         </div>
         
         {showCheckoutButton && (
-          <Button 
-            onClick={onCheckout} 
-            className="w-full bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 font-bold shadow-lg" 
-            size="lg"
-          >
-            Proceed to Checkout
-          </Button>
+          <div className="space-y-2">
+            <Link href="/cart">
+              <Button 
+                className="w-full bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 font-bold shadow-lg" 
+                size="lg"
+              >
+                View Full Cart & Checkout
+              </Button>
+            </Link>
+            <Button 
+              onClick={onCheckout} 
+              variant="outline"
+              className="w-full font-semibold" 
+              size="lg"
+            >
+              Quick Checkout
+            </Button>
+          </div>
         )}
       </CardContent>
     </Card>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { Food, SearchFilters } from '@/lib/food/types';
 import { getAllFoods, getUniqueCategories, getUniqueSpiceLevels, sortFoods, SortOption } from '@/lib/food/index';
 import { FilterSidebar } from './FilterSidebar';
@@ -22,6 +22,11 @@ export function BrowseView() {
   const [filters, setFilters] = useState<SearchFilters>({});
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [displayCount, setDisplayCount] = useState(12);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+  const mainRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const foods = getAllFoods();
@@ -106,6 +111,70 @@ export function BrowseView() {
     return count;
   }, [filters]);
 
+  // Reset display count when filters change
+  useEffect(() => {
+    setDisplayCount(12);
+  }, [debouncedSearchQuery, filters, sortBy]);
+
+  // Load more callback
+  const handleLoadMore = useCallback(() => {
+    if (isLoadingMore || displayCount >= filteredAndSortedFoods.length) return;
+    
+    setIsLoadingMore(true);
+    setTimeout(() => {
+      setDisplayCount((prev) => prev + 12);
+      setIsLoadingMore(false);
+    }, 500);
+  }, [isLoadingMore, displayCount, filteredAndSortedFoods.length]);
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const loadMoreElement = loadMoreRef.current;
+    const mainElement = mainRef.current;
+    
+    if (!loadMoreElement || !mainElement) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting) {
+          handleLoadMore();
+        }
+      },
+      {
+        root: mainElement,
+        rootMargin: '200px',
+        threshold: 0.1,
+      }
+    );
+
+    observer.observe(loadMoreElement);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [handleLoadMore]);
+
+  // Scroll position tracker for back to top button
+  useEffect(() => {
+    const handleScroll = () => {
+      const mainElement = mainRef.current;
+      if (mainElement) {
+        setShowBackToTop(mainElement.scrollTop > 500);
+      }
+    };
+
+    const mainElement = mainRef.current;
+    if (mainElement) {
+      mainElement.addEventListener('scroll', handleScroll);
+      return () => mainElement.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
+
+  const scrollToTop = () => {
+    mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const clearFilters = () => {
     setFilters({});
     setSearchQuery('');
@@ -173,10 +242,10 @@ export function BrowseView() {
       </AnimatePresence>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto">
-        <div className="container mx-auto px-4 py-6 max-w-7xl">
-          {/* Header */}
-          <div className="mb-6">
+      <main className="flex-1 flex flex-col overflow-hidden">
+        {/* Sticky Header */}
+        <div className="sticky top-0 z-10 bg-background border-b">
+          <div className="container mx-auto px-4 py-6 max-w-7xl">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
@@ -187,7 +256,10 @@ export function BrowseView() {
                 </p>
               </div>
               <Link href="/">
-                <Button variant="outline" size="default">
+                <Button 
+                  size="default"
+                  className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-semibold"
+                >
                   <MessageSquare className="w-4 h-4 mr-2" />
                   Ask AI
                 </Button>
@@ -203,6 +275,11 @@ export function BrowseView() {
               onToggleFilters={() => setIsMobileFilterOpen(true)}
             />
           </div>
+        </div>
+
+        {/* Scrollable Content */}
+        <div ref={mainRef} className="flex-1 overflow-y-auto">
+          <div className="container mx-auto px-4 py-6 max-w-7xl">
 
           {/* Active Filters */}
           {(activeFilterCount > 0 || searchQuery) && (
@@ -281,8 +358,64 @@ export function BrowseView() {
           )}
 
           {/* Food Grid */}
-          <FoodGrid foods={filteredAndSortedFoods} isLoading={isLoading} />
+          <FoodGrid foods={filteredAndSortedFoods.slice(0, displayCount)} isLoading={isLoading} />
+
+          {/* Intersection Observer Target */}
+          {!isLoading && displayCount < filteredAndSortedFoods.length && (
+            <div 
+              ref={loadMoreRef} 
+              className="h-32 flex items-center justify-center py-8"
+              style={{ minHeight: '128px' }}
+            >
+              {isLoadingMore ? (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <div className="w-2 h-2 bg-orange-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <div className="w-2 h-2 bg-orange-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <div className="w-2 h-2 bg-orange-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  <span className="ml-2 text-sm font-medium">Loading more delicious items...</span>
+                </div>
+              ) : (
+                <div className="text-xs text-muted-foreground/50">
+                  Scroll for more • {filteredAndSortedFoods.length - displayCount} items remaining
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* End of results message */}
+          {!isLoading && displayCount >= filteredAndSortedFoods.length && filteredAndSortedFoods.length > 12 && (
+            <div className="text-center py-8 text-muted-foreground">
+              <p className="text-sm font-medium">You've reached the end! 🎉</p>
+              <p className="text-xs mt-1">Showing all {filteredAndSortedFoods.length} items</p>
+            </div>
+          )}
+          </div>
         </div>
+
+        {/* Back to Top Button */}
+        <AnimatePresence>
+          {showBackToTop && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              onClick={scrollToTop}
+              className="fixed bottom-8 right-8 w-12 h-12 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center z-30 transition-all"
+              aria-label="Scroll to top"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2.5}
+                stroke="currentColor"
+                className="w-6 h-6"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+              </svg>
+            </motion.button>
+          )}
+        </AnimatePresence>
       </main>
     </div>
   );
