@@ -1,65 +1,106 @@
 import { Food, SearchFilters, SearchResult } from './types';
 import { getFoodsWithEmbeddings } from './index';
+import OpenAI from 'openai';
 
-export function searchFoods(
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY || '',
+});
+
+// Semantic query expansion using LLM
+export async function expandQuery(query: string): Promise<string> {
+  try {
+    const expansion = await openai.chat.completions.create({
+      messages: [{
+        role: 'system',
+        content: `You are a food search query expander. Given a user's food query, expand it with RELEVANT keywords only:
+- Direct synonyms of the food/dish
+- Related ingredients (only if specific food mentioned)
+- Flavor profiles (only if mentioned)
+- Common preparations (only if specific food mentioned)
+
+IMPORTANT: 
+- Keep expansions FOCUSED and SPECIFIC to the query
+- For specific items (coffee, pizza, biryani), expand with variations of THAT item only
+- For vague queries (healthy, spicy), expand with descriptive terms
+- Return ONLY comma-separated keywords, nothing else
+
+Examples:
+"coffee" → "coffee,filter coffee,cappuccino,espresso,latte,caffeine,beverage"
+"creamy" → "creamy,cream,butter,rich,velvety,smooth,luxurious,indulgent"
+"spicy" → "spicy,hot,chili,pepper,heat,fiery,bold,tangy"
+"healthy" → "healthy,protein,lean,nutritious,light,low-calorie,wholesome"
+"pizza" → "pizza,margherita,pepperoni,cheese,italian,flatbread"
+"breakfast" → "breakfast,morning,light,fresh,energizing,dosa,idli,paratha,upma"`
+      }, {
+        role: 'user',
+        content: query
+      }],
+      model: 'gpt-4o-mini',
+      temperature: 0.5,
+      max_tokens: 100,
+    });
+
+    const expanded = expansion.choices[0]?.message?.content || query;
+    return expanded.toLowerCase();
+  } catch (error) {
+    console.error('Query expansion error:', error);
+    return query;
+  }
+}
+
+export async function searchFoods(
   query: string,
   filters?: SearchFilters,
-  limit: number = 10
-): SearchResult[] {
+  limit: number = 10,
+  context?: string[]
+): Promise<SearchResult[]> {
   const foods = getFoodsWithEmbeddings();
+  
+  // Expand query semantically using LLM
+  const expandedQuery = await expandQuery(query);
+  
+  // Combine with context from conversation
+  const contextQuery = context?.join(' ') || '';
+  const fullQuery = `${expandedQuery} ${contextQuery}`.toLowerCase();
+  
+  const queryWords = fullQuery.split(/[,\s]+/).filter(w => w.length > 2);
   const queryLower = query.toLowerCase();
-  
-  const synonyms: Record<string, string[]> = {
-    'chicken': ['chicken', 'murgh'],
-    'vegetarian': ['vegetarian', 'veg', 'veggie', 'plant-based'],
-    'spicy': ['spicy', 'hot', 'chili', 'pepper'],
-    'mild': ['mild', 'light', 'subtle'],
-    'dessert': ['dessert', 'sweet', 'mithai'],
-    'drink': ['drink', 'beverage', 'juice', 'lassi'],
-    'bread': ['bread', 'naan', 'roti', 'paratha'],
-    'rice': ['rice', 'biryani', 'pulao'],
-  };
-  
-  let expandedQuery = queryLower;
-  Object.entries(synonyms).forEach(([key, values]) => {
-    if (values.some(v => queryLower.includes(v))) {
-      expandedQuery += ' ' + values.join(' ');
-    }
-  });
   
   let results = foods.map(food => {
     let score = 0;
     
+    // Exact name match (highest priority)
     if (food.name.toLowerCase().includes(queryLower)) {
-      score += 10;
+      score += 15;
     }
     
-    if (food.description.toLowerCase().includes(queryLower)) {
-      score += 5;
-    }
-    
-    if (food.category.toLowerCase().includes(queryLower)) {
-      score += 3;
-    }
-    
-    if (food.ingredients.some(ing => ing.toLowerCase().includes(queryLower))) {
-      score += 4;
-    }
-    
-    const queryWords = expandedQuery.split(' ').filter(w => w.length > 2);
+    // Expanded query matching
     queryWords.forEach(word => {
+      // Name matching
+      if (food.name.toLowerCase().includes(word)) {
+        score += 8;
+      }
+      
+      // Description matching
+      if (food.description.toLowerCase().includes(word)) {
+        score += 5;
+      }
+      
+      // Category matching
+      if (food.category.toLowerCase().includes(word)) {
+        score += 4;
+      }
+      
+      // Ingredients matching
+      if (food.ingredients.some(ing => ing.toLowerCase().includes(word))) {
+        score += 3;
+      }
+      
+      // Search text matching
       if (food.searchText.includes(word)) {
-        score += 1;
+        score += 2;
       }
     });
-    
-    if (score === 0 && queryWords.length > 0) {
-      queryWords.forEach(word => {
-        if (food.searchText.includes(word.substring(0, 4))) {
-          score += 0.5;
-        }
-      });
-    }
     
     return {
       food: {
@@ -118,6 +159,9 @@ export function searchFoods(
       return true;
     });
   }
+  
+  // Filter out low-score results (noise)
+  results = results.filter(({ score }) => score >= 5);
   
   results.sort((a, b) => b.score - a.score);
   
