@@ -31,12 +31,12 @@ export function SuggestedQueries({ onSelect }: SuggestedQueriesProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 + index * 0.1 }}
             onClick={() => onSelect(suggestion.query)}
-            className="relative p-4 border-2 rounded-xl hover:shadow-lg transition-all text-left group overflow-hidden bg-card hover:border-orange-300"
+            className="relative p-4 border-2 rounded-xl hover:shadow-lg transition-all text-left group overflow-hidden bg-card hover:border-orange-300 dark:hover:border-orange-600"
           >
-            <div className={`absolute inset-0 bg-gradient-to-br ${suggestion.color} opacity-0 group-hover:opacity-10 transition-opacity`} />
+            <div className={`absolute inset-0 bg-gradient-to-br ${suggestion.color} opacity-0 group-hover:opacity-10 dark:group-hover:opacity-20 transition-opacity`} />
             <div className="relative flex flex-col gap-2">
               <span className="text-3xl">{suggestion.icon}</span>
-              <span className="text-sm font-semibold group-hover:text-orange-600 transition-colors">
+              <span className="text-sm font-semibold group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
                 {suggestion.text}
               </span>
             </div>

@@ -128,7 +128,7 @@ export function ChatMessage({
                 "rounded-2xl px-4 py-3 shadow-md transition-all hover:shadow-lg",
                 isUser
                   ? "bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-tr-none"
-                  : "bg-gradient-to-br from-orange-50 to-red-50 border border-orange-200 rounded-tl-none"
+                  : "bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-950/50 dark:to-red-950/50 border border-orange-200 dark:border-orange-800 rounded-tl-none text-foreground"
               )}
             >
               <p className="text-sm whitespace-pre-wrap leading-relaxed">{content}</p>
@@ -146,7 +146,7 @@ export function ChatMessage({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-7 w-7 p-0 hover:bg-orange-100"
+                    className="h-7 w-7 p-0 hover:bg-orange-100 dark:hover:bg-orange-900/30"
                     onClick={handleCopy}
                     title="Copy message"
                   >
@@ -160,7 +160,7 @@ export function ChatMessage({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-7 w-7 p-0 hover:bg-orange-100"
+                    className="h-7 w-7 p-0 hover:bg-orange-100 dark:hover:bg-orange-900/30"
                     onClick={handleSpeak}
                     title={isSpeaking ? "Stop speaking" : "Read aloud"}
                   >
@@ -173,7 +173,7 @@ export function ChatMessage({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-7 w-7 p-0 hover:bg-green-100"
+                    className="h-7 w-7 p-0 hover:bg-green-100 dark:hover:bg-green-900/30"
                     onClick={handleLike}
                     title="Helpful"
                   >
@@ -186,7 +186,7 @@ export function ChatMessage({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-7 w-7 p-0 hover:bg-red-100"
+                    className="h-7 w-7 p-0 hover:bg-red-100 dark:hover:bg-red-900/30"
                     onClick={handleDislike}
                     title="Not helpful"
                   >

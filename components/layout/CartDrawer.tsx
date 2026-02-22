@@ -103,9 +103,9 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5 }}
-                    className="mt-6 p-4 bg-orange-50 rounded-lg border border-orange-200"
+                    className="mt-6 p-4 bg-orange-50 dark:bg-orange-950/30 rounded-lg border border-orange-200 dark:border-orange-800"
                   >
-                    <div className="flex items-center justify-center gap-2 text-orange-700">
+                    <div className="flex items-center justify-center gap-2 text-orange-700 dark:text-orange-400">
                       <Truck className="w-5 h-5" />
                       <p className="font-semibold">Expected delivery: 30-45 minutes</p>
                     </div>
@@ -120,7 +120,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   <Button
                     variant="ghost"
                     onClick={() => setShowCheckout(false)}
-                    className="mb-4 hover:bg-orange-50"
+                    className="mb-4 hover:bg-orange-50 dark:hover:bg-orange-950"
                   >
                     ← Back to Cart
                   </Button>
