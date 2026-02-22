@@ -66,13 +66,24 @@ export function OrderHistory() {
     const order = getOrder(orderId);
     if (!order) return;
 
-    order.items.forEach((item) => {
+    const validItems = order.items.filter(item => item.food);
+    
+    validItems.forEach((item) => {
       addItem(item.food, item.quantity);
     });
 
+    if (validItems.length === 0) {
+      toast({
+        title: 'Cannot reorder',
+        description: 'This order contains invalid items',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     toast({
       title: 'Items added to cart!',
-      description: `${order.items.length} items from your previous order have been added to your cart`,
+      description: `${validItems.length} items from your previous order have been added to your cart`,
     });
   };
 
@@ -119,27 +130,31 @@ export function OrderHistory() {
               <CardContent>
                 {/* Order Items */}
                 <div className="space-y-2 mb-4">
-                  {order.items.map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between text-sm py-2 border-b last:border-0"
-                    >
-                      <div className="flex items-center gap-3">
-                        {item.food.image && (
-                          <img
-                            src={item.food.image}
-                            alt={item.food.name}
-                            className="w-12 h-12 rounded object-cover"
-                          />
-                        )}
-                        <div>
-                          <p className="font-medium">{item.food.name}</p>
-                          <p className="text-muted-foreground">Qty: {item.quantity}</p>
+                  {order.items.map((item, index) => {
+                    if (!item.food) return null;
+                    
+                    return (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between text-sm py-2 border-b last:border-0"
+                      >
+                        <div className="flex items-center gap-3">
+                          {item.food.image && (
+                            <img
+                              src={item.food.image}
+                              alt={item.food.name}
+                              className="w-12 h-12 rounded object-cover"
+                            />
+                          )}
+                          <div>
+                            <p className="font-medium">{item.food.name}</p>
+                            <p className="text-muted-foreground">Qty: {item.quantity}</p>
+                          </div>
                         </div>
+                        <p className="font-semibold">{formatPrice(item.food.price * item.quantity)}</p>
                       </div>
-                      <p className="font-semibold">{formatPrice(item.food.price * item.quantity)}</p>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {/* Delivery Info */}

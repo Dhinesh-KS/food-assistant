@@ -44,7 +44,7 @@ export const useOrderHistoryStore = create<OrderHistoryStore>()(
           status: order.status,
           createdAt: order.createdAt,
           conversationId: order.conversationId,
-          firstItemName: order.items[0]?.food.name,
+          firstItemName: order.items[0]?.food?.name,
         }));
       },
 
