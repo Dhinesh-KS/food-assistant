@@ -1,6 +1,7 @@
 "use client";
 
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Leaf, Flame, Drumstick, Coffee, Cake, UtensilsCrossed } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface SuggestedQueriesProps {
   onSelect: (query: string) => void;
@@ -8,36 +9,48 @@ interface SuggestedQueriesProps {
 
 export function SuggestedQueries({ onSelect }: SuggestedQueriesProps) {
   const suggestions = [
-    { icon: "🥗", text: "Vegetarian options", query: "Show me vegetarian options" },
-    { icon: "💪", text: "High protein meals", query: "I need high protein meals" },
-    { icon: "🌶️", text: "Spicy food", query: "I want something spicy" },
-    { icon: "🍚", text: "North Indian", query: "What North Indian dishes do you have?" },
-    { icon: "🥤", text: "Beverages", query: "Show me drinks and beverages" },
-    { icon: "🍰", text: "Desserts", query: "What desserts do you have?" },
+    { icon: "🥗", text: "Vegetarian options", query: "Show me vegetarian options", color: "from-green-500 to-emerald-500" },
+    { icon: "💪", text: "High protein meals", query: "I need high protein meals", color: "from-blue-500 to-cyan-500" },
+    { icon: "🌶️", text: "Spicy food", query: "I want something spicy", color: "from-red-500 to-orange-500" },
+    { icon: "🍚", text: "North Indian", query: "What North Indian dishes do you have?", color: "from-amber-500 to-yellow-500" },
+    { icon: "🥤", text: "Beverages", query: "Show me drinks and beverages", color: "from-purple-500 to-pink-500" },
+    { icon: "🍰", text: "Desserts", query: "What desserts do you have?", color: "from-pink-500 to-rose-500" },
   ];
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Sparkles className="w-4 h-4" />
-        <span>Try asking:</span>
+    <div className="space-y-4 max-w-3xl mx-auto">
+      <div className="flex items-center justify-center gap-2 text-sm font-medium text-muted-foreground">
+        <Sparkles className="w-5 h-5 text-orange-500" />
+        <span>Popular searches to get you started</span>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         {suggestions.map((suggestion, index) => (
-          <button
+          <motion.button
             key={index}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 + index * 0.1 }}
             onClick={() => onSelect(suggestion.query)}
-            className="p-3 border rounded-lg hover:bg-accent hover:border-primary transition-all text-left group"
+            className="relative p-4 border-2 rounded-xl hover:shadow-lg transition-all text-left group overflow-hidden bg-card hover:border-orange-300"
           >
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">{suggestion.icon}</span>
-              <span className="text-sm font-medium group-hover:text-primary">
+            <div className={`absolute inset-0 bg-gradient-to-br ${suggestion.color} opacity-0 group-hover:opacity-10 transition-opacity`} />
+            <div className="relative flex flex-col gap-2">
+              <span className="text-3xl">{suggestion.icon}</span>
+              <span className="text-sm font-semibold group-hover:text-orange-600 transition-colors">
                 {suggestion.text}
               </span>
             </div>
-          </button>
+          </motion.button>
         ))}
       </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.3 }}
+        className="text-center text-xs text-muted-foreground mt-6"
+      >
+        <p>Or simply type what you're craving below ⬇️</p>
+      </motion.div>
     </div>
   );
 }

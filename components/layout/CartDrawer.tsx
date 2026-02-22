@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, ShoppingBag, CheckCircle2, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CartSummary } from '@/components/chat/dynamic/CartSummary';
 import { CheckoutForm } from '@/components/chat/dynamic/CheckoutForm';
@@ -37,7 +37,8 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 z-50"
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
             onClick={onClose}
           />
           
@@ -45,14 +46,23 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 h-full w-full max-w-md bg-background z-50 shadow-xl overflow-y-auto"
+            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            className="fixed right-0 top-0 h-full w-full max-w-md bg-background z-50 shadow-2xl overflow-y-auto"
           >
-            <div className="sticky top-0 bg-background border-b p-4 flex items-center justify-between">
-              <h2 className="text-xl font-bold">
-                {orderConfirmed ? 'Order Confirmed!' : showCheckout ? 'Checkout' : 'Your Cart'}
-              </h2>
-              <Button variant="ghost" size="icon" onClick={onClose}>
+            <div className="sticky top-0 bg-gradient-to-r from-orange-500 to-red-600 text-white p-4 flex items-center justify-between shadow-md z-10">
+              <div className="flex items-center gap-2">
+                {orderConfirmed ? (
+                  <CheckCircle2 className="w-6 h-6" />
+                ) : showCheckout ? (
+                  <Truck className="w-6 h-6" />
+                ) : (
+                  <ShoppingBag className="w-6 h-6" />
+                )}
+                <h2 className="text-xl font-bold">
+                  {orderConfirmed ? 'Order Confirmed!' : showCheckout ? 'Checkout' : 'Your Cart'}
+                </h2>
+              </div>
+              <Button variant="ghost" size="icon" onClick={onClose} className="text-white hover:bg-white/20">
                 <X className="w-5 h-5" />
               </Button>
             </div>
@@ -62,35 +72,71 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 <motion.div
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="text-center py-12"
+                  transition={{ type: "spring", stiffness: 200 }}
+                  className="text-center py-16"
                 >
-                  <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-                    <span className="text-5xl">✓</span>
-                  </div>
-                  <h3 className="text-2xl font-bold mb-2">Order Placed!</h3>
-                  <p className="text-muted-foreground">
-                    Your delicious food is on its way!
-                  </p>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Expected delivery: 30-45 minutes
-                  </p>
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                    className="w-24 h-24 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center mx-auto mb-6 shadow-lg"
+                  >
+                    <CheckCircle2 className="w-12 h-12 text-white" />
+                  </motion.div>
+                  <motion.h3
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="text-3xl font-bold mb-3 bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent"
+                  >
+                    Order Placed Successfully!
+                  </motion.h3>
+                  <motion.p
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="text-muted-foreground text-lg mb-2"
+                  >
+                    Your delicious food is on its way! 🎉
+                  </motion.p>
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="mt-6 p-4 bg-orange-50 rounded-lg border border-orange-200"
+                  >
+                    <div className="flex items-center justify-center gap-2 text-orange-700">
+                      <Truck className="w-5 h-5" />
+                      <p className="font-semibold">Expected delivery: 30-45 minutes</p>
+                    </div>
+                  </motion.div>
                 </motion.div>
               ) : showCheckout ? (
-                <div>
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
                   <Button
                     variant="ghost"
                     onClick={() => setShowCheckout(false)}
-                    className="mb-4"
+                    className="mb-4 hover:bg-orange-50"
                   >
                     ← Back to Cart
                   </Button>
                   <CheckoutForm onSubmit={handleOrderSubmit} />
-                </div>
+                </motion.div>
               ) : (
-                <CartSummary
-                  showCheckoutButton={true}
-                  onCheckout={handleCheckout}
-                />
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <CartSummary
+                    showCheckoutButton={true}
+                    onCheckout={handleCheckout}
+                  />
+                </motion.div>
               )}
             </div>
           </motion.div>

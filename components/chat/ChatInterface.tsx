@@ -34,7 +34,7 @@ export function ChatInterface() {
     scrollToBottom();
   }, [messages, isLoading]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
   };
 
@@ -221,17 +221,48 @@ export function ChatInterface() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="text-center py-16"
+                className="text-center py-12 px-4"
               >
-                <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
-                  <span className="text-5xl">🍽️</span>
-                </div>
-                <h2 className="text-3xl font-bold mb-3">Welcome to Spice & Delight!</h2>
-                <p className="text-muted-foreground text-lg mb-8 max-w-md mx-auto">
-                  I'm your AI assistant. Ask me anything about our menu or tell me what you're
-                  craving!
-                </p>
-                <SuggestedQueries onSelect={handleQuickAction} />
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+                  className="w-24 h-24 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center mx-auto mb-6 shadow-lg"
+                >
+                  <span className="text-6xl">🍽️</span>
+                </motion.div>
+                <motion.h2
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent"
+                >
+                  Welcome to Spice & Delight!
+                </motion.h2>
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="text-muted-foreground text-lg md:text-xl mb-4 max-w-2xl mx-auto"
+                >
+                  Your AI-powered culinary companion
+                </motion.p>
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  className="text-muted-foreground text-base mb-10 max-w-xl mx-auto"
+                >
+                  Ask me anything about our menu, dietary preferences, or tell me what you're craving. 
+                  I'll help you discover the perfect meal! 🌟
+                </motion.p>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 }}
+                >
+                  <SuggestedQueries onSelect={handleQuickAction} />
+                </motion.div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -254,8 +285,8 @@ export function ChatInterface() {
         </div>
       </div>
 
-      <div className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="max-w-4xl mx-auto px-4 py-4">
+      <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="max-w-4xl mx-auto px-4 py-4 border-t">
           <MessageInput
             input={input}
             handleInputChange={handleInputChange}
