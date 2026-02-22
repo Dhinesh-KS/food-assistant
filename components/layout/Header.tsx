@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { CartDrawer } from './CartDrawer';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SignInButton, SignUpButton, UserButton, useUser } from '@clerk/nextjs';
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
 
 export function Header() {
   const itemCount = useCartStore((state) => state.getItemCount());
@@ -38,6 +39,8 @@ export function Header() {
           </div>
 
           <div className="flex items-center gap-3">
+            <ThemeToggle />
+            
             {mounted && (
               <>
                 {!isSignedIn ? (
@@ -76,7 +79,7 @@ export function Header() {
                 variant="outline"
                 size="default"
                 onClick={() => setIsCartOpen(true)}
-                className="relative hover:bg-orange-50 hover:border-orange-300 transition-all"
+                className="relative hover:bg-orange-50 dark:hover:bg-orange-950 hover:border-orange-300 dark:hover:border-orange-700 transition-all"
               >
                 <ShoppingCart className="w-5 h-5 mr-2" />
                 <span className="font-semibold">Cart</span>
@@ -98,7 +101,7 @@ export function Header() {
                 <Button
                   variant="outline"
                   size="default"
-                  className="relative hover:bg-orange-50 hover:border-orange-300 transition-all"
+                  className="relative hover:bg-orange-50 dark:hover:bg-orange-950 hover:border-orange-300 dark:hover:border-orange-700 transition-all"
                 >
                   <ShoppingCart className="w-5 h-5 mr-2" />
                   <span className="font-semibold">Cart</span>
