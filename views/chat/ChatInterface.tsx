@@ -14,6 +14,8 @@ import { useConversationStore } from '@/store/conversation';
 import { Plus, History as HistoryIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { getFoodsWithEmbeddings } from '@/lib/food-client';
+import { useRouter } from 'next/navigation';
 
 export interface Message {
   id: string;
@@ -32,7 +34,9 @@ export function ChatInterface() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const hasInitialized = useRef(false);
   const addItem = useCartStore((state) => state.addItem);
+  const cartItems = useCartStore((state) => state.items);
   const { user, isSignedIn } = useUser();
+  const router = useRouter();
   
   // Conversation management
   const {
@@ -138,6 +142,13 @@ export function ChatInterface() {
           handleSubmit(fakeEvent, { data: { message: messageText } });
         }
         break;
+      
+      case 'navigate':
+        const url = action.payload?.url;
+        if (url) {
+          router.push(url);
+        }
+        break;
     }
   };
 
@@ -180,6 +191,7 @@ export function ChatInterface() {
             ...messages.map((m) => ({ role: m.role, content: m.content })),
             { role: 'user', content: messageText },
           ],
+          currentCart: cartItems, // Send current cart state
         }),
       });
 
@@ -233,6 +245,18 @@ export function ChatInterface() {
               } else if (data.type === 'done') {
                 // Set final message and component
                 const uiComponents = data.component ? [data.component] : [];
+                
+                // Handle cart items if present
+                if (data.cartItems && Array.isArray(data.cartItems)) {
+                  const allFoods = getFoodsWithEmbeddings();
+                  data.cartItems.forEach((item: { foodId: number; quantity: number }) => {
+                    const food = allFoods.find(f => f.id === item.foodId);
+                    if (food) {
+                      addItem(food, item.quantity);
+                    }
+                  });
+                }
+                
                 setMessages((prev) =>
                   prev.map((m) =>
                     m.id === assistantMessage.id

@@ -30,7 +30,7 @@ export interface ComponentSchema {
 }
 
 export interface ActionSchema {
-  type: 'add_to_cart' | 'remove_from_cart' | 'view_details' | 'message';
+  type: 'add_to_cart' | 'remove_from_cart' | 'view_details' | 'message' | 'navigate';
   payload?: Record<string, any>;
 }
 

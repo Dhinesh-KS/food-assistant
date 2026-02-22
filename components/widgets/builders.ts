@@ -1,5 +1,5 @@
 import { ComponentSchema } from '@/types/component';
-import { Food } from '@/types/food';
+import { Food, CartItem } from '@/types/food';
 import { formatPrice } from '@/lib/utils';
 
 /**
@@ -292,6 +292,122 @@ export function buildSuggestionsMessage(suggestions: string[]): ComponentSchema 
             },
           },
         })),
+      },
+    ],
+  };
+}
+
+export function buildCartSummary(items: CartItem[], total: number): ComponentSchema {
+  return {
+    type: 'Card',
+    props: {
+      variant: 'default',
+      padding: '20px',
+      className: 'mt-4 border-2 border-primary/30 bg-gradient-to-br from-orange-50/50 to-white shadow-sm',
+    },
+    children: [
+      {
+        type: 'Row',
+        props: { justify: 'between', align: 'center', className: 'mb-4' },
+        children: [
+          {
+            type: 'Title',
+            props: {
+              text: '🛒 Cart Summary',
+              size: 'lg',
+              weight: 'bold',
+            },
+          },
+          {
+            type: 'Badge',
+            props: {
+              text: `${items.length} item${items.length > 1 ? 's' : ''}`,
+              variant: 'secondary',
+            },
+          },
+        ],
+      },
+      {
+        type: 'Column',
+        props: { gap: '12px', className: 'mb-4' },
+        children: items.map((item) => ({
+          type: 'Row',
+          props: { justify: 'between', align: 'start', className: 'py-2' },
+          children: [
+            {
+              type: 'Column',
+              props: { gap: '4px', className: 'flex-1' },
+              children: [
+                {
+                  type: 'Text',
+                  props: {
+                    text: item.food.name,
+                    weight: 'semibold',
+                    size: 'base',
+                    color: 'primary',
+                  },
+                },
+                {
+                  type: 'Text',
+                  props: {
+                    text: `${formatPrice(item.food.price)} × ${item.quantity}`,
+                    size: 'sm',
+                    color: 'muted',
+                  },
+                },
+              ],
+            },
+            {
+              type: 'Text',
+              props: {
+                text: formatPrice(item.food.price * item.quantity),
+                weight: 'bold',
+                size: 'base',
+                color: 'primary',
+              },
+            },
+          ],
+        })),
+      },
+      {
+        type: 'Divider',
+        props: { className: 'my-4' },
+      },
+      {
+        type: 'Row',
+        props: { justify: 'between', align: 'center', className: 'mb-4' },
+        children: [
+          {
+            type: 'Text',
+            props: {
+              text: 'Total',
+              weight: 'bold',
+              size: 'xl',
+            },
+          },
+          {
+            type: 'Text',
+            props: {
+              text: formatPrice(total),
+              weight: 'bold',
+              size: '2xl',
+              color: 'primary',
+            },
+          },
+        ],
+      },
+      {
+        type: 'Button',
+        props: {
+          text: '🛍️ Proceed to Checkout',
+          variant: 'primary',
+          size: 'lg',
+          className: 'w-full',
+          action: {
+            type: 'navigate',
+            payload: { url: '/cart' },
+          },
+        },
       },
     ],
   };
