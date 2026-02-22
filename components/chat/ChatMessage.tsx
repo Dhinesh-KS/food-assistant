@@ -2,8 +2,8 @@
 
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { ComponentSchema, ActionSchema } from '@/lib/components/schema';
-import { ComponentRenderer } from '@/lib/components/renderer';
+import { ComponentSchema, ActionSchema } from '@/components/widgets/schema';
+import { ComponentRenderer } from '@/components/widgets/renderer';
 
 interface ChatMessageProps {
   role: 'user' | 'assistant';

@@ -2,7 +2,7 @@
 
 import { ShoppingCart, ChefHat } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useCartStore } from '@/lib/cart/store';
+import { useCartStore } from '@/store/cart';
 import { useState, useEffect } from 'react';
 import { CartDrawer } from './CartDrawer';
 

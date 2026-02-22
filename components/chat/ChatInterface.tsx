@@ -6,8 +6,8 @@ import { MessageInput } from './MessageInput';
 import { TypingIndicator } from './TypingIndicator';
 import { SuggestedQueries } from './SuggestedQueries';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ComponentSchema, ActionSchema } from '@/lib/components/schema';
-import { useCartStore } from '@/lib/cart/store';
+import { ComponentSchema, ActionSchema } from '@/components/widgets/schema';
+import { useCartStore } from '@/store/cart';
 import { toast } from '@/hooks/use-toast';
 
 interface Message {

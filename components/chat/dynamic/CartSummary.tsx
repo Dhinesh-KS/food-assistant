@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus, Minus, Trash2, ShoppingBag } from 'lucide-react';
-import { useCartStore } from '@/lib/cart/store';
+import { useCartStore } from '@/store/cart';
 import { formatPrice } from '@/lib/utils';
 
 interface CartSummaryProps {

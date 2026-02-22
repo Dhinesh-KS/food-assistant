@@ -1,8 +1,8 @@
 import OpenAI from 'openai';
 import { NextResponse } from 'next/server';
-import { SYSTEM_PROMPT } from '@/lib/ai/prompts';
+import { SYSTEM_PROMPT } from '@/lib/prompts';
 import { searchFoods } from '@/lib/food/search';
-import { buildFoodCarousel, buildNoResultsMessage } from '@/lib/components/builders';
+import { buildFoodCarousel, buildNoResultsMessage } from '@/components/widgets/builders';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || '',
@@ -20,6 +20,51 @@ export async function POST(req: Request) {
     const stream = new ReadableStream({
       async start(controller) {
         try {
+          // First, ask LLM to analyze the intent
+          const intentAnalysis = await openai.chat.completions.create({
+            messages: [
+              {
+                role: 'system',
+                content: `You are an intent analyzer for a food ordering system. Analyze if the user's message requires showing food items/menu.
+
+IMPORTANT: Only set showFood=true if the user is specifically asking about FOOD, MENU, or ORDERING. 
+
+Return a JSON object with:
+- showFood: boolean (true ONLY if user is asking about food, menu, recommendations, or wants to see food options)
+- searchQuery: string (extract the food-related search terms, or empty string if not applicable)
+- filters: object with optional fields:
+  - type: "Vegetarian" | "Non-Vegetarian" | null
+  - spiceLevel: "Mild" | "Medium" | "Spicy" | "Medium-Hot" | null
+  - minProtein: number | null
+  - maxCarbs: number | null
+  - maxCalories: number | null
+
+Examples:
+- "hi" -> {"showFood": false, "searchQuery": "", "filters": {}}
+- "hello" -> {"showFood": false, "searchQuery": "", "filters": {}}
+- "how are you?" -> {"showFood": false, "searchQuery": "", "filters": {}}
+- "I want to order mobile" -> {"showFood": false, "searchQuery": "", "filters": {}}
+- "what's your address?" -> {"showFood": false, "searchQuery": "", "filters": {}}
+- "what vegetarian options do you have?" -> {"showFood": true, "searchQuery": "vegetarian", "filters": {"type": "Vegetarian"}}
+- "show me lunch options" -> {"showFood": true, "searchQuery": "lunch", "filters": {}}
+- "I need something high protein low carb" -> {"showFood": true, "searchQuery": "high protein low carb", "filters": {"minProtein": 20, "maxCarbs": 20}}
+- "show me your menu" -> {"showFood": true, "searchQuery": "popular", "filters": {}}
+- "what do you have?" -> {"showFood": true, "searchQuery": "popular", "filters": {}}
+- "I'm hungry" -> {"showFood": true, "searchQuery": "popular", "filters": {}}
+- "recommend something" -> {"showFood": true, "searchQuery": "popular", "filters": {}}`,
+              },
+              {
+                role: 'user',
+                content: userMessage,
+              },
+            ],
+            model: 'gpt-4o-mini',
+            temperature: 0.3,
+            response_format: { type: 'json_object' },
+          });
+
+          const intent = JSON.parse(intentAnalysis.choices[0]?.message?.content || '{}');
+
           // Stream AI response
           const completion = await openai.chat.completions.create({
             messages: [
@@ -47,52 +92,29 @@ export async function POST(req: Request) {
             }
           }
 
-          // Extract search intent and perform search
-          let filters: any = {};
-          let searchQuery = userMessage.toLowerCase();
+          // Use LLM's decision to show food or not
+          let componentSchema = null;
 
-          // Extract filters from user message
-          if (searchQuery.includes('vegetarian') || searchQuery.includes('veg')) {
-            filters.type = 'Vegetarian';
-          }
-          if (
-            searchQuery.includes('non-veg') ||
-            searchQuery.includes('meat') ||
-            searchQuery.includes('chicken') ||
-            searchQuery.includes('fish')
-          ) {
-            filters.type = 'Non-Vegetarian';
-          }
-          if (searchQuery.includes('spicy') || searchQuery.includes('hot')) {
-            filters.spiceLevel = 'Spicy';
-          }
-          if (searchQuery.includes('mild')) {
-            filters.spiceLevel = 'Mild';
-          }
-          if (searchQuery.includes('high protein')) {
-            filters.minProtein = 20;
-          }
-          if (searchQuery.includes('low carb')) {
-            filters.maxCarbs = 20;
-          }
-          if (searchQuery.includes('low calorie')) {
-            filters.maxCalories = 400;
+          if (intent.showFood) {
+            // Use LLM-extracted search query and filters
+            const searchQuery = intent.searchQuery || userMessage;
+            const filters = intent.filters || {};
+
+            // Perform search
+            let searchResults = searchFoods(searchQuery, filters, 6);
+
+            // Fallback to popular items if no results
+            if (searchResults.length === 0 || searchResults.every((r) => r.score === 0)) {
+              searchResults = searchFoods('popular', {}, 6);
+            }
+
+            // Build JSON UI schema
+            const foods = searchResults.map((r) => r.food);
+            componentSchema =
+              foods.length > 0 ? buildFoodCarousel(foods) : buildNoResultsMessage();
           }
 
-          // Perform search
-          let searchResults = searchFoods(userMessage, filters, 6);
-
-          // Fallback to popular items if no results
-          if (searchResults.length === 0 || searchResults.every((r) => r.score === 0)) {
-            searchResults = searchFoods('popular', {}, 6);
-          }
-
-          // Build JSON UI schema
-          const foods = searchResults.map((r) => r.food);
-          const componentSchema =
-            foods.length > 0 ? buildFoodCarousel(foods) : buildNoResultsMessage();
-
-          // Send final message with component schema
+          // Send final message with component schema (if any)
           const doneData = JSON.stringify({
             type: 'done',
             message: fullMessage,

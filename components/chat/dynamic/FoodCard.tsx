@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Minus, Leaf, Flame } from 'lucide-react';
 import { Food } from '@/lib/food/types';
-import { useCartStore } from '@/lib/cart/store';
+import { useCartStore } from '@/store/cart';
 import { formatPrice } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
 
