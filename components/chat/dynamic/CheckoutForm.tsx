@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useCartStore } from '@/store/cart';
 import { formatPrice } from '@/lib/utils';
+import { useUser } from '@clerk/nextjs';
 
 interface CheckoutFormProps {
   onSubmit?: (orderData: any) => void;
@@ -13,6 +14,7 @@ interface CheckoutFormProps {
 
 export function CheckoutForm({ onSubmit }: CheckoutFormProps) {
   const { items, getTotal, clearCart } = useCartStore();
+  const { user } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -20,6 +22,17 @@ export function CheckoutForm({ onSubmit }: CheckoutFormProps) {
     address: '',
     notes: '',
   });
+
+  // Pre-fill form with user data if authenticated
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        name: user.fullName || `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+        phone: user.primaryPhoneNumber?.phoneNumber || prev.phone,
+      }));
+    }
+  }, [user]);
 
   const subtotal = getTotal();
   const tax = Math.round(subtotal * 0.05);

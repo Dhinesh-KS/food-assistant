@@ -11,6 +11,7 @@ import { useCartStore } from '@/store/cart';
 import { formatPrice } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
+import { useUser, SignInButton } from '@clerk/nextjs';
 
 interface FoodCardProps {
   food: Food;
@@ -20,6 +21,7 @@ export function FoodCard({ food }: FoodCardProps) {
   const [quantity, setQuantity] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const addItem = useCartStore((state) => state.addItem);
+  const { isSignedIn } = useUser();
 
   console.log(`FoodCard ${food.name} - Modal state:`, isModalOpen);
 
@@ -180,13 +182,24 @@ export function FoodCard({ food }: FoodCardProps) {
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
-              <Button 
-                onClick={handleAddToCart} 
-                className="flex-1 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 font-semibold shadow-md"
-              >
-                <ShoppingCart className="w-4 h-4 mr-1" />
-                Add
-              </Button>
+              {isSignedIn ? (
+                <Button 
+                  onClick={handleAddToCart} 
+                  className="flex-1 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 font-semibold shadow-md"
+                >
+                  <ShoppingCart className="w-4 h-4 mr-1" />
+                  Add
+                </Button>
+              ) : (
+                <SignInButton mode="modal">
+                  <Button 
+                    className="flex-1 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 font-semibold shadow-md"
+                  >
+                    <ShoppingCart className="w-4 h-4 mr-1" />
+                    Sign in to Add
+                  </Button>
+                </SignInButton>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -306,13 +319,24 @@ export function FoodCard({ food }: FoodCardProps) {
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
-              <Button 
-                onClick={handleAddToCart} 
-                className="flex-1 h-12 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 font-bold shadow-lg text-lg"
-              >
-                <ShoppingCart className="w-5 h-5 mr-2" />
-                Add to Cart - {formatPrice(food.price * quantity)}
-              </Button>
+              {isSignedIn ? (
+                <Button 
+                  onClick={handleAddToCart} 
+                  className="flex-1 h-12 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 font-bold shadow-lg text-lg"
+                >
+                  <ShoppingCart className="w-5 h-5 mr-2" />
+                  Add to Cart - {formatPrice(food.price * quantity)}
+                </Button>
+              ) : (
+                <SignInButton mode="modal">
+                  <Button 
+                    className="flex-1 h-12 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 font-bold shadow-lg text-lg"
+                  >
+                    <ShoppingCart className="w-5 h-5 mr-2" />
+                    Sign in to Add - {formatPrice(food.price * quantity)}
+                  </Button>
+                </SignInButton>
+              )}
             </div>
           </div>
         </div>

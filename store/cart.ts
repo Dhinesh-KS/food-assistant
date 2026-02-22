@@ -4,18 +4,35 @@ import { CartItem, Food } from '@/lib/food/types';
 
 interface CartStore {
   items: CartItem[];
+  userId: string | null;
   addItem: (food: Food, quantity?: number) => void;
   removeItem: (foodId: number) => void;
   updateQuantity: (foodId: number, quantity: number) => void;
   clearCart: () => void;
   getTotal: () => number;
   getItemCount: () => number;
+  setUserId: (userId: string | null) => void;
+  syncCart: (userId: string | null) => void;
 }
 
 export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
       items: [],
+      userId: null,
+      
+      setUserId: (userId: string | null) => {
+        set({ userId });
+      },
+      
+      syncCart: (userId: string | null) => {
+        const currentUserId = get().userId;
+        
+        // If user changed (login/logout), clear cart
+        if (currentUserId !== userId) {
+          set({ items: [], userId });
+        }
+      },
       
       addItem: (food: Food, quantity: number = 1) => {
         set((state) => {
@@ -74,6 +91,10 @@ export const useCartStore = create<CartStore>()(
     }),
     {
       name: 'cart-storage',
+      partialize: (state) => ({
+        items: state.items,
+        userId: state.userId,
+      }),
     }
   )
 );

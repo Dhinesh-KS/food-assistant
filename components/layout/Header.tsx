@@ -6,11 +6,13 @@ import { useCartStore } from '@/store/cart';
 import { useState, useEffect } from 'react';
 import { CartDrawer } from './CartDrawer';
 import { motion, AnimatePresence } from 'framer-motion';
+import { SignInButton, SignUpButton, UserButton, useUser } from '@clerk/nextjs';
 
 export function Header() {
   const itemCount = useCartStore((state) => state.getItemCount());
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const { isSignedIn, user } = useUser();
 
   useEffect(() => {
     setMounted(true);
@@ -35,27 +37,75 @@ export function Header() {
             </div>
           </div>
 
-          <Button
-            variant="outline"
-            size="default"
-            onClick={() => setIsCartOpen(true)}
-            className="relative hover:bg-orange-50 hover:border-orange-300 transition-all"
-          >
-            <ShoppingCart className="w-5 h-5 mr-2" />
-            <span className="font-semibold">Cart</span>
-            <AnimatePresence>
-              {mounted && itemCount > 0 && (
-                <motion.span
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  exit={{ scale: 0 }}
-                  className="absolute -top-2 -right-2 bg-gradient-to-br from-orange-500 to-red-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-lg"
+          <div className="flex items-center gap-3">
+            {mounted && (
+              <>
+                {!isSignedIn ? (
+                  <div className="flex items-center gap-2">
+                    <SignInButton mode="modal">
+                      <Button variant="ghost" size="sm" className="font-semibold">
+                        Sign In
+                      </Button>
+                    </SignInButton>
+                    <SignUpButton mode="modal">
+                      <Button size="sm" className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 font-semibold">
+                        Sign Up
+                      </Button>
+                    </SignUpButton>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground hidden sm:inline">
+                      Hi, {user?.firstName || 'there'}!
+                    </span>
+                    <UserButton 
+                      afterSignOutUrl="/"
+                      appearance={{
+                        elements: {
+                          avatarBox: "w-9 h-9"
+                        }
+                      }}
+                    />
+                  </div>
+                )}
+              </>
+            )}
+            
+            {isSignedIn ? (
+              <Button
+                variant="outline"
+                size="default"
+                onClick={() => setIsCartOpen(true)}
+                className="relative hover:bg-orange-50 hover:border-orange-300 transition-all"
+              >
+                <ShoppingCart className="w-5 h-5 mr-2" />
+                <span className="font-semibold">Cart</span>
+                <AnimatePresence>
+                  {mounted && itemCount > 0 && (
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      exit={{ scale: 0 }}
+                      className="absolute -top-2 -right-2 bg-gradient-to-br from-orange-500 to-red-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-lg"
+                    >
+                      {itemCount}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </Button>
+            ) : (
+              <SignInButton mode="modal">
+                <Button
+                  variant="outline"
+                  size="default"
+                  className="relative hover:bg-orange-50 hover:border-orange-300 transition-all"
                 >
-                  {itemCount}
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </Button>
+                  <ShoppingCart className="w-5 h-5 mr-2" />
+                  <span className="font-semibold">Cart</span>
+                </Button>
+              </SignInButton>
+            )}
+          </div>
         </div>
       </header>
 

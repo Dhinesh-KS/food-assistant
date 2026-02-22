@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ComponentSchema, ActionSchema } from '@/components/widgets/schema';
 import { useCartStore } from '@/store/cart';
 import { toast } from '@/hooks/use-toast';
+import { useUser } from '@clerk/nextjs';
 
 interface Message {
   id: string;
@@ -25,6 +26,7 @@ export function ChatInterface() {
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const addItem = useCartStore((state) => state.addItem);
+  const { user, isSignedIn } = useUser();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -237,7 +239,9 @@ export function ChatInterface() {
                   transition={{ delay: 0.3 }}
                   className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent"
                 >
-                  Welcome to Spice & Delight!
+                  {isSignedIn 
+                    ? `Welcome back, ${user?.firstName || 'there'}!` 
+                    : 'Welcome to Spice & Delight!'}
                 </motion.h2>
                 <motion.p
                   initial={{ opacity: 0, y: 10 }}
@@ -245,7 +249,9 @@ export function ChatInterface() {
                   transition={{ delay: 0.4 }}
                   className="text-muted-foreground text-lg md:text-xl mb-4 max-w-2xl mx-auto"
                 >
-                  Your AI-powered culinary companion
+                  {isSignedIn 
+                    ? 'Ready to order your favorite dishes?' 
+                    : 'Your AI-powered culinary companion'}
                 </motion.p>
                 <motion.p
                   initial={{ opacity: 0, y: 10 }}
